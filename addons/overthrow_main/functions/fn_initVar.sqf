@@ -315,14 +315,24 @@ if(isServer) then {
 };
 
 private _allVehs = "
-    ( getNumber ( _x >> ""scope"" ) isEqualTo 2
-    &&
-	{ (getArray ( _x >> ""threat"" ) select 0) < 0.5}
-	&&
-    { (toLower getText ( _x >> ""vehicleClass"" ) isEqualTo ""car"") || (toLower getText ( _x >> ""vehicleClass"" ) isEqualTo ""support"")}
-	&&
-    { (getText ( _x >> ""faction"" ) isEqualTo ""CIV_F"") or
-     (getText ( _x >> ""faction"" ) isEqualTo ""IND_F"")})
+     ( getNumber ( _x >> ""scope"" ) isEqualTo 2  
+    &&  
+ { (getArray ( _x >> ""threat"" ) select 0) < 0.5}  
+ &&  
+    { (getText ( _x >> ""vehicleClass"" ) isEqualTo ""Car"") || (getText ( _x >> ""vehicleClass"" ) isEqualTo ""Ivory"")|| (getText ( _x >> ""author"" ) isEqualTo ""DANZ"") || (getText ( _x >> ""vehicleClass"" ) isEqualTo ""Support"")}  
+&& 
+  ! (((configName _x) in [ ""CUP_I_M113_Med_AAF"",""CUP_I_TowingTractor_AAF"",""CUP_C_TowingTractor_CIV"",""I_Truck_02_MRL_F""]) || 
+  ([""_CPP"",(configName _x)] call BIS_fnc_inString) || ([""_EMS"",(configName _x)] call BIS_fnc_inString) ||
+   ([""_police"",(configName _x)] call BIS_fnc_inString) || ([""_PD"",(configName _x)] call BIS_fnc_inString) ||
+   ([""_unm"",(configName _x)] call BIS_fnc_inString) || ([""_COP"",(configName _x)] call BIS_fnc_inString) ||
+   ([""insurgent"",(configName _x)] call BIS_fnc_inString)
+   ) 
+   
+ &&  
+    {  ([""CIV_"", getText ( _x >> ""faction"" )]  call BIS_fnc_inString) or  
+ ([""CFP_C"", getText ( _x >> ""faction"" )]  call BIS_fnc_inString) or  
+ ([""CUP_C"", getText ( _x >> ""faction"" )]  call BIS_fnc_inString) or 
+     (getText ( _x >> ""faction"" ) isEqualTo ""IND_F"")})  
 
 " configClasses ( configFile >> "cfgVehicles" );
 
@@ -334,21 +344,35 @@ private _mostExpensive = 0;
 	_cost = _cost + round(getNumber (_clsConfig >> "maximumLoad") * 0.1);
 
 	if(_cls isKindOf "Truck_F") then {_cost = _cost * 2};
-	if(getText (_clsConfig >> "faction") != "CIV_F") then {_cost = _cost * 1.5};
+ if(!((["CIV_", getText ( _x >> "faction" )] call BIS_fnc_inString) || (["CFP_C", getText ( _x >> "faction" )]  call BIS_fnc_inString)|| (["CUP_C", getText ( _x >> "faction" )]  call BIS_fnc_inString))) then {_cost = _cost * 1.5}; 
+ if (getText ( _x >> "vehicleClass" ) isEqualTo "Ivory") then {_cost = _cost * 1.8}; 
+ if ((["V12_",(configName _x)] call BIS_fnc_inString)) then {_cost = _cost * 1.35}; 
+  if ((["Jonzie_",(configName _x)] call BIS_fnc_inString)) then {_cost = _cost * 1.2}; 
+  if ((["d3s_",(configName _x)] call BIS_fnc_inString)) then {_cost = _cost * 1.4}; 
+  if (getText ( _x >> "vehicleClass" ) isEqualTo "MOTO") then {_cost = _cost * 0.5}; 
+ if ((["V12_",(configName _x)] call BIS_fnc_inString) &&  
+  ((["APRIL",(configName _x)] call BIS_fnc_inString)   ||  
+ (["S1000",(configName _x)] call BIS_fnc_inString)  || 
+ (["HARLEY",(configName _x)] call BIS_fnc_inString) || 
+ (["KAWAS",(configName _x)] call BIS_fnc_inString)  || 
+ (["KTM",(configName _x)] call BIS_fnc_inString)   || 
+ (["CRF",(configName _x)] call BIS_fnc_inString)    
+  
+ )) then {_cost = _cost * 0.5}; 
 
 
 	OT_vehicles pushback [_cls,_cost,0,getNumber (_clsConfig >> "armor"),2];
 	OT_allVehicles pushback _cls;
-	if(getText (_clsConfig >> "faction") == "CIV_F") then {
-		if(getText(_clsConfig >> "textSingular") != "truck" && getText(_clsConfig >> "driverAction") != "Kart_driver") then {
-			OT_vehTypes_civ pushback _cls;
-
-			if(_cost > _mostExpensive)then {
-				_mostExpensive = _cost;
-				OT_mostExpensiveVehicle = _cls;
-			};
-		};
-	};
+if((["CIV_", getText ( _x >> "faction" )] call BIS_fnc_inString) || (["CFP_C", getText ( _x >> "faction" )]  call BIS_fnc_inString) || (["CUP_C", getText ( _x >> "faction" )]  call BIS_fnc_inString)) then { 
+  if(getText(_clsConfig >> "textSingular") != "truck" && getText(_clsConfig >> "driverAction") != "Kart_driver" && !(["Kart",(configName _x)] call BIS_fnc_inString)) then { 
+   OT_vehTypes_civ pushback _cls; 
+ 
+   if(_cost > _mostExpensive)then { 
+    _mostExpensive = _cost; 
+    OT_mostExpensiveVehicle = _cls; 
+   }; 
+  }; 
+ }; 
 }foreach(_allVehs);
 
 //Determine vehicle threats
@@ -435,8 +459,11 @@ if(isServer) then {
 		cost setVariable [_cls,[_x select 1,_x select 2,_x select 3,_x select 4],true];
 	};
 	if(_cls in OT_vehTypes_civ) then {
-		OT_vehWeights_civ pushback (_mostExpensive - (_x select 1)) + 1; //This will make whatever is the most expensive car very rare
-	};
+		if ( ["d3s" , _cls] call BIS_fnc_inString ) then { OT_vehWeights_civ pushback (((_mostExpensive - (_x select 1)) + 1)/5.5); } 
+		else { 
+		OT_vehWeights_civ pushback (_mostExpensive - (_x select 1)) + 1;  
+		}; 
+	}; 
 	OT_allVehicles pushBack _cls;
 }foreach(OT_vehicles);
 
