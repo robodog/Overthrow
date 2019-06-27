@@ -459,7 +459,7 @@ if(isServer) then {
 		cost setVariable [_cls,[_x select 1,_x select 2,_x select 3,_x select 4],true];
 	};
 	if(_cls in OT_vehTypes_civ) then {
-		if ( ["d3s" , _cls] call BIS_fnc_inString ) then { OT_vehWeights_civ pushback (((_mostExpensive - (_x select 1)) + 1)/5.5); } 
+		if ( ["d3s" , _cls] call BIS_fnc_inString ) then { OT_vehWeights_civ pushback (((_mostExpensive - (_x select 1)) + 1)/7); } 
 		else { 
 		OT_vehWeights_civ pushback (_mostExpensive - (_x select 1)) + 1;  
 		}; 
@@ -801,7 +801,7 @@ OT_allLegalClothing = [];
 		OT_allClothing pushback _name;
 
 		private _side = _c select 1;
-		if((_name == "V_RebreatherIA" || _side == "C" || _side == "I") && (_c select (count _c - 1) != "VR")) then {
+		if((_name == "V_RebreatherIA" || _side == "C" || (["CUP_U_C",_name] call BIS_fnc_inString) || _side == "I") && (_c select (count _c - 1) != "VR")) then {
 			OT_allLegalClothing pushback _name;
 		};
 		if (isServer && isNil {cost getVariable _name}) then {

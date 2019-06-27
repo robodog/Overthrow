@@ -6,7 +6,7 @@ lbClear 1500;
 
 	private _c = _cls splitString "_";
 	private _side = _c select 1;
-	if((_cls == "V_RebreatherIA" || _side == "C" || _side == "I") && (_c select (count _c - 1) != "VR")) then {
+	if((_cls == "V_RebreatherIA" || (["CUP_U_C",_cls] call BIS_fnc_inString) || _side == "C" || _side == "I") && (_c select (count _c - 1) != "VR")) then {
 		private _price = [_town,_cls,_standing] call OT_fnc_getPrice;
 		private _name = "";
 		private _pic = "";
