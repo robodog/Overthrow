@@ -96,37 +96,26 @@ class CfgMissions
 	};
 	class Missions
 	{
-		class OverthrowSpTanoa
-		{
-			directory="overthrow_main\campaign\missions\OverthrowSpTanoa.Tanoa";
-		};
-		class OverthrowSpAltis
-		{
-			directory="overthrow_main\campaign\missions\OverthrowSpAltis.Altis";
-		};
-		class OverthrowSpMalden
-		{
-			directory="overthrow_main\campaign\missions\OverthrowSpMalden.Malden";
-		};
+		// class OverthrowSpTanoa
+		// {
+			// directory="overthrow_main\campaign\missions\OverthrowSpTanoa.Tanoa";
+		// };
+		// class OverthrowSpAltis
+		// {
+			// directory="overthrow_main\campaign\missions\OverthrowSpAltis.Altis";
+		// };
+		// class OverthrowSpMalden
+		// {
+			// directory="overthrow_main\campaign\missions\OverthrowSpMalden.Malden";
+		// };
 	};
 	class MPMissions
 	{
-		class OverthrowMpTanoa
+		class OverthrowMpRuegen
 		{
-			directory="overthrow_main\campaign\missions\OverthrowMpTanoa.Tanoa";
+			directory="overthrow_main\campaign\missions\OverthrowMpRuegen.d41_ruegen_scorched";
 		};
-		class OverthrowMpAltis
-		{
-			directory="overthrow_main\campaign\missions\OverthrowMpAltis.Altis";
-		};
-		class OverthrowMpMalden
-		{
-			directory="overthrow_main\campaign\missions\OverthrowMpMalden.Malden";
-		};
-		class OverthrowMpLivonia
-		{
-			directory="overthrow_main\campaign\missions\OverthrowMpLivonia.Enoch";
-		};
+
 	};
 };
 
