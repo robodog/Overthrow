@@ -34,6 +34,7 @@ _range = 100;
 _groupcount = 0;
 
 _group = createGroup blufor;
+_group2 = OT_NATO_Group;
 _group setVariable ["VCM_TOUGHSQUAD",true,true];
 _group setVariable ["VCM_NORESCUE",true,true];
 _groups pushBack _group;
@@ -41,7 +42,9 @@ _groupcount = 1;
 
 _start = [_start,7,_dir-90] call BIS_fnc_relPos;
 
-_civ = _group createUnit [OT_NATO_Unit_TeamLeader, _start, [],0, "NONE"];
+_civ = _group2 createUnit [OT_NATO_Unit_TeamLeader, _start, [],0, "NONE"];
+[_civ] joinSilent _group;
+//_civ setCaptive true;
 _civ setVariable ["garrison",_name,false];
 _civ setRank "MAJOR";
 _soldiers pushBack _civ;
@@ -64,7 +67,8 @@ _count = _count + 1;
 sleep 0.3;
 while {_count < _numNATO} do {
 	_start = [_start,2,_dir-180] call BIS_fnc_relPos;
-	_civ = _group createUnit [OT_NATO_Units_LevelTwo call BIS_fnc_selectRandom, _start, [],0, "NONE"];
+	_civ = _group2 createUnit [OT_NATO_Units_LevelTwo call BIS_fnc_selectRandom, _start, [],0, "NONE"];
+	[_civ] joinSilent _group;
 	_civ setVariable ["garrison",_name,false];
 	_soldiers pushBack _civ;
 	_civ setRank "CAPTAIN";

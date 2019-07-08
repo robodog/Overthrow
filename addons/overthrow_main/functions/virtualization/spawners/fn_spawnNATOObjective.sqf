@@ -44,22 +44,29 @@ if(_supplypos isEqualType []) then {
 //Make sure the first group spawned in at a comms base are a sniper, spotter, AA specialist and AA assistant
 if(_name in OT_allComms) then {
 	private _group = createGroup [blufor,true];
+	private _group2 = OT_NATO_Group;
 	_groups pushBack _group;
 	_group setVariable ["VCM_TOUGHSQUAD",true,true];
 	_group setVariable ["VCM_NORESCUE",true,true];
 
 	private _start = _posTown findEmptyPosition [2,50];
-	private _civ = _group createUnit [OT_NATO_Unit_Sniper, _start, [], 0, "NONE"];
+	private _civ = _group2 createUnit [OT_NATO_Unit_Sniper, _start, [], 0, "NONE"];
+	_civ setCaptive true;
+	[_civ] joinSilent _group;
+	
 	_civ setVariable ["garrison",_name,false];
 	_civ setRank "CAPTAIN";
 	[_civ,_name] call OT_fnc_initMilitary;
 	_civ setBehaviour "SAFE";
 	_count = _count + 1;
 	sleep 0.5;
+	_civ setCaptive false;
 
 	if(_count < _numNATO) then {
 		_start = _posTown findEmptyPosition [2,50];
-		_civ = _group createUnit [OT_NATO_Unit_Spotter, _start, [], 0, "NONE"];
+		_civ = _group2 createUnit [OT_NATO_Unit_Spotter, _start, [], 0, "NONE"];
+		_civ setCaptive true;
+		[_civ] joinSilent _group;
 		_civ setVariable ["garrison",_name,false];
 		_civ setRank "CAPTAIN";
 		_civ setVariable ["VCOM_NOPATHING_Unit",true,false];
@@ -67,13 +74,16 @@ if(_name in OT_allComms) then {
 		_civ setBehaviour "SAFE";
 		_count = _count + 1;
 		sleep 0.5;
+		_civ setCaptive false;
 	};
 
 	[_group,_posTown,75,6] call CBA_fnc_taskPatrol;
 
 	if(_count < _numNATO) then {
 		_start = _posTown findEmptyPosition [2,50];
-		_civ = _group createUnit [OT_NATO_Unit_AA_spec, _start, [], 0, "NONE"];
+		_civ = _group2 createUnit [OT_NATO_Unit_AA_spec, _start, [], 0, "NONE"];
+		_civ setCaptive true;
+		[_civ] joinSilent _group;
 		_civ setVariable ["garrison",_name,false];
 		_civ setRank "CAPTAIN";
 		_civ setVariable ["VCOM_NOPATHING_Unit",true,false];
@@ -81,6 +91,7 @@ if(_name in OT_allComms) then {
 		_civ setBehaviour "SAFE";
 		_count = _count + 1;
 		sleep 0.5;
+		_civ setCaptive false;
 	};
 
 	if(_count < _numNATO) then {
@@ -88,7 +99,9 @@ if(_name in OT_allComms) then {
 		if((count _start) isEqualTo 0) then {
 			_start = _posTown findEmptyPosition [2,150];
 		};
-		_civ = _group createUnit [OT_NATO_Unit_AA_ass, _start, [], 0, "NONE"];
+		_civ = _group2 createUnit [OT_NATO_Unit_AA_ass, _start, [], 0, "NONE"];
+		_civ setCaptive true;
+		[_civ] joinSilent _group;
 		_civ setVariable ["garrison",_name,false];
 		_civ setRank "CAPTAIN";
 		_civ setVariable ["VCOM_NOPATHING_Unit",true,false];
@@ -96,6 +109,7 @@ if(_name in OT_allComms) then {
 		_civ setBehaviour "SAFE";
 		_count = _count + 1;
 		sleep 0.5;
+		_civ setCaptive false;
 	};
 	[_group,_posTown,75,6] call CBA_fnc_taskPatrol;
 
@@ -183,6 +197,7 @@ private _groupcount = 0;
 while {_count < _numNATO} do {
 	private _start = _posTown findEmptyPosition [5,200];
 	private _group = createGroup blufor;
+	private _group2 = OT_NATO_Group;
 	_group setVariable ["VCM_TOUGHSQUAD",true,true];
 	_group setVariable ["VCM_NORESCUE",true,true];
 
@@ -190,10 +205,13 @@ while {_count < _numNATO} do {
 	_groups pushBack _group;
 	_groupcount = 1;
 
-	private _civ = _group createUnit [OT_NATO_Unit_TeamLeader, _start, [],0, "NONE"];
+	private _civ = _group2 createUnit [OT_NATO_Unit_TeamLeader, _start, [],0, "NONE"];
+	_civ setCaptive true;
+	[_civ] joinSilent _group; 
+	_civ setCaptive false;
 	_civ setVariable ["garrison",_name,false];
 	_civ setRank "CAPTAIN";
-	[_civ] joinSilent _group;
+
 	_civ setVariable ["VCOM_NOPATHING_Unit",true,false];
 	[_civ,_name] call OT_fnc_initMilitary;
 	_civ setBehaviour "SAFE";
@@ -317,6 +335,7 @@ private _road = objNull;
 	_x params ["_id","_loc","_status"];
 	if(_loc == _name && _status == "") then {
 		private _group = createGroup blufor;
+		private _group2 = OT_NATO_Group;
 		_groups pushBack _group;
 		_group setVariable ["Vcm_Disable",true,true]; //stop him from running off
 		private _vpos = _posTown findEmptyPosition [10,100,OT_NATO_Vehicle_HVT];
@@ -328,7 +347,10 @@ private _road = objNull;
 		sleep 0.5;
 
 		private _pos = _vpos findEmptyPosition [5,20,OT_NATO_Unit_HVT];
-		private _civ = _group createUnit [OT_NATO_Unit_HVT, _pos, [],0, "NONE"];
+		private _civ = _group2 createUnit [OT_NATO_Unit_HVT, _pos, [],0, "NONE"];
+		_civ setCaptive true;
+		[_civ] joinSilent _group;
+		_civ setCaptive false;
 		_civ setVariable ["garrison","HQ",false];
 		_civ setVariable ["hvt",true,true];
 		_civ setVariable ["hvt_id",_id,true];
@@ -340,7 +362,7 @@ private _road = objNull;
 		[_civ,"HQ"] call OT_fnc_initMilitary;
 		_civ addEventHandler ["FiredNear", {params ["_unit"];_unit enableAI "PATH"}];
 		sleep 0.5;
-
+		_civ setCaptive false;
 		private _wp = _group addWaypoint [_pos, 0];
 		_wp setWaypointType "GUARD";
 		_wp = _group addWaypoint [_pos, 0];

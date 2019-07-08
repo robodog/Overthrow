@@ -26,7 +26,7 @@ class Campaign
 	{
 		name = "Overthrow";
 		cutScene = "";
-		firstMission = "Tanoa";
+		firstMission = "ruegen_CUP";
 		end1 = "";
 		end2 = "";
 		end3 = "";
@@ -37,25 +37,12 @@ class Campaign
 
 		#define _CAMPAIGN 1
 
-		class Tanoa: MissionDefault
+		class ruegen_CUP: MissionDefault
 		{
 			end1 = "Altis";
-			template = "OverthrowSpTanoa.Tanoa";
+			template = "OverthrowMpRuegen.d41_ruegen_scorched";
 		};
 
-		class Altis: MissionDefault
-		{
-			template = "OverthrowSpAltis.Altis";
-		};
 
-		class Malden: MissionDefault
-		{
-			template = "OverthrowSpMalden.Malden";
-		};
-
-		class Livonia: MissionDefault
-		{
-			template = "OverthrowSpLivonia.Enoch";
-		};
 	};
 };

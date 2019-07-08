@@ -421,8 +421,10 @@ publicVariable "OT_nextNATOTurn";
 							_group = createGroup blufor;
 							_group deleteGroupWhenEmpty true;
 							_p = [_pos,0,0,false,[0,0],[100,OT_NATO_Vehicles_ReconDrone]] call SHK_pos_fnc_pos;
+							_p = [_p select 0, _p select 1, (_p select 2) + 300];
 							_drone = createVehicle [OT_NATO_Vehicles_ReconDrone, _p, [], 0,""];
 							_drone enableDynamicSimulation false;
+							_drone setVelocityModelSpace [0, 100, 0];
 
 							createVehicleCrew _drone;
 							{

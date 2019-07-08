@@ -2,6 +2,10 @@ if (!isServer) exitwith {};
 OT_NATO_GroundForces = [];
 OT_NATO_Group_Recon = "";
 OT_NATO_Group_Engineers = "";
+OT_NATO_Group = createGroup blufor;
+GOD = OT_NATO_Group createUnit ["B_Soldier_F", [0,0,0], [], 0, "NONE"];
+GOD allowDamage false;
+GOD enableSimulationGlobal false;
 {
 	private _name = configName _x;
 	if((_name find "Recon") > -1) then {
@@ -12,14 +16,14 @@ OT_NATO_Group_Engineers = "";
 	if(_numtroops > 5) then {
 		OT_NATO_GroundForces pushback _name;
 	};
-}foreach("true" configClasses (configFile >> "CfgGroups" >> "West" >> OT_faction_NATO >> "Infantry"));
+}foreach("true" configClasses (configFile >> "CfgGroups" >> OT_faction_NATO_side  >> OT_faction_NATO >> "Infantry"));
 
 {
 	private _name = configName _x;
 	if((_name find "ENG") > -1) then {
 		OT_NATO_Group_Engineers = _name;
 	};
-}foreach("true" configClasses (configFile >> "CfgGroups" >> "West" >> OT_faction_NATO >> "Support"));
+}foreach("true" configClasses (configFile >> "CfgGroups" >> OT_faction_NATO_side  >> OT_faction_NATO >> "Support"));
 
 OT_NATO_Units_LevelOne = [];
 OT_NATO_Units_LevelTwo = [];
@@ -28,6 +32,74 @@ OT_NATO_Units_CTRGSupport = [];
 (OT_loadingMessages call BIS_fnc_selectRandom) remoteExec['OT_fnc_notifyStart',0,false];
 
 private _c = 0;
+
+if ((OT_faction_NATO find 'CUP') > -1 || (OT_faction_NATO find 'CFP') > -1) then 
+{
+
+{
+	private _name = configName _x;
+	private _unitCfg = _x;
+	if(!(_name isEqualTo OT_NATO_Unit_Police) && !(_name isEqualTo OT_NATO_Unit_PoliceCommander)) then {
+		[_name] call {
+			params ["_name"];
+			if((_name find "_TL") > -1) exitWith {
+				OT_NATO_Unit_TeamLeader = _name;
+			};
+			if((_name find "_SL") > -1) exitWith {
+				OT_NATO_Unit_SquadLeader = _name;
+			};
+			if((_name find "_Officer") > -1 || (_name find "_officer") > -1) exitWith {
+				OT_NATO_Unit_HVT = _name
+			};
+			if((_name find "_SpecOps") > -1) exitWith {
+				OT_NATO_Units_CTRGSupport pushback _name
+			};
+			if(
+				(_name find "_Recon_") > -1
+				|| (_name find "_recon_") > -1
+				|| (_name find "_story_") > -1
+				|| (_name find "_Story_") > -1
+				|| (_name find "_lite_") > -1
+				|| (_name find "_HeavyGunner_") > -1
+			) exitWith {};
+
+			private _role = getText (_x >> "role");
+			private _DN = getText (_x >> "displayName");
+			if((_name find "_MG") > -1) then {OT_NATO_Units_LevelOne pushback _name};
+			if((_name find "_Medic") > -1) then {OT_NATO_Units_LevelOne pushback _name};
+			if (_DN in ["Rifleman"] ) then {OT_NATO_Units_LevelOne pushback _name; };
+			//if((_name find "_Soldier") > -1 && (_name find "_Soldier_") == -1) then {OT_NATO_Units_LevelOne pushback _name};
+			//if(_role in ["MachineGunner", "Machinegunner","Rifleman","CombatLifeSaver"]) then {OT_NATO_Units_LevelOne pushback _name};
+			if((_name find "_GL") > -1) then {OT_NATO_Units_LevelTwo pushback _name};
+			if((_name find "_AR") > -1) then {OT_NATO_Units_LevelTwo pushback _name};
+			if((_name find "_AA") > -1) then {OT_NATO_Units_LevelTwo pushback _name};
+			if((_name find "_LAT") > -1) then {OT_NATO_Units_LevelTwo pushback _name};
+			if((_name find "Marksman") > -1 ) then {OT_NATO_Units_LevelTwo pushback _name};
+			
+			//if(_role in ["Grenadier","MissileSpecialist","Marksman"]) then {OT_NATO_Units_LevelTwo pushback _name};
+			if( (_name find "Sniper") > -1) then {OT_NATO_Unit_Sniper = _name};
+			if( (_name find "Spotter") > -1) then {OT_NATO_Unit_Spotter = _name};
+			if((_name find "AA") > -1) then {OT_NATO_Unit_AA_spec = _name};
+
+			//Generate and cache alternative loadouts for this unit
+			private _loadout = getUnitLoadout _unitCfg;
+			private _loadouts = [];
+			for "_i" from 1 to 5 do {
+				_loadouts pushback ([_loadout] call OT_fnc_randomizeLoadout);
+			};
+			spawner setVariable [format["loadouts_%1",_name],_loadouts,false];
+			_c = _c + 1;
+			if(_c isEqualTo 10) then {
+				sleep 0.1;
+				_c = 0;
+			};
+		};
+	};
+}foreach(format["(getNumber(_x >> 'scope') isEqualTo 2) && (getText(_x >> 'faction') isEqualTo '%1') && (configName _x) isKindOf 'SoldierWB'",OT_faction_NATO] configClasses (configFile >> "CfgVehicles"));
+
+}
+else 
+{
 
 {
 	private _name = configName _x;
@@ -77,8 +149,9 @@ private _c = 0;
 			};
 		};
 	};
-}foreach(format["(getNumber(_x >> 'scope') isEqualTo 2) && (getText(_x >> 'faction') isEqualTo '%1') && (configName _x) isKindOf 'SoldierWB'",OT_faction_NATO] configClasses (configFile >> "CfgVehicles"));
+}foreach(format["(getNumber(_x >> 'scope') isEqualTo 2) && (getText(_x >> 'faction') isEqualTo '%1') && (configName _x) isKindOf 'SoldierWB'",configFile >> "CfgGroups" >> OT_faction_NATO_side  >> OT_faction_NATO] configClasses (configFile >> "CfgVehicles"));
 
+};
 (OT_loadingMessages call BIS_fnc_selectRandom) remoteExec['OT_fnc_notifyStart',0,false];
 
 //Generate and cache gendarm loadouts
@@ -324,7 +397,7 @@ diag_log "Overthrow: NATO Init Done";
 		if(_name isEqualTo OT_NATO_HQ) then {
 			_mrk setMarkerType "ot_HQ";
 		}else{
-			_mrk setMarkerType "flag_NATO";
+			_mrk setMarkerType OT_flag_NATO_Marker;
 		};
 	};
 

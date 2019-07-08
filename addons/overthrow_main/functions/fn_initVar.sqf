@@ -602,7 +602,9 @@ OT_allBLURifleMagazines = [];
 	private _vehicles = [];
 	private _weapons = [];
 	private _blacklist = ["Throw","Put","NLAW_F"];
-
+	if (isNil {OT_Allowed_Factions}) then {OT_Allowed_Factions = ["BLU_F" ];};
+	if (isNil {OT_faction_NATO_side}) then {OT_faction_NATO_side = "West";};
+	
 	private _all = format["(getNumber( _x >> ""scope"" ) isEqualTo 2 ) && (getText( _x >> ""faction"" ) isEqualTo '%1')",_name] configClasses ( configFile >> "cfgVehicles" );
 	{
 		private _cls = configName _x;
@@ -613,7 +615,8 @@ OT_allBLURifleMagazines = [];
 				if !(_base in _blacklist) then {
 					private _muzzleEffect = getText (configFile >> "CfgWeapons" >> _base >> "muzzleEffect");
 					if !(_x in _weapons) then {_weapons pushback _base};
-					if(_side isEqualTo 1 && !(_muzzleEffect isEqualTo "BIS_fnc_effectFiredFlares")) then {
+					//if(_side isEqualTo 1 && !(_muzzleEffect isEqualTo "BIS_fnc_effectFiredFlares")) then {
+					if (_name in OT_Allowed_Factions && !(_muzzleEffect isEqualTo "BIS_fnc_effectFiredFlares")) then {
 						if(_base isKindOf ["Rifle", configFile >> "CfgWeapons"]) then {
 							private _mass = getNumber (configFile >> "CfgWeapons" >> _base >> "WeaponSlotsInfo" >> "mass");
 							_base call {
@@ -651,7 +654,7 @@ OT_allBLURifleMagazines = [];
 				if(_cls isKindOf "LandVehicle" || _cls isKindOf "Air" || _cls isKindOf "Ship") then {
 					_vehicles pushback _cls;
 					_numblueprints = _numblueprints + 1;
-					if(_side isEqualTo 1) then {
+					if(_name in OT_Allowed_Factions) then {
 						private _threat = getArray (_x >> "threat");
 						if(_threat#0 > 0.5) then {
 							OT_allBLUOffensiveVehicles pushBackUnique _cls;
